@@ -1,7 +1,7 @@
 <?php
 include("../conn.php");
 
-if($_POST["submit"]){
+if(isset($_POST["submit"])){
 	$reg_name = $_POST["username"];
 	$reg_pwd = $_POST["password"];
 
@@ -25,13 +25,35 @@ if($_POST["submit"]){
 <head>
 <meta charset="utf-8">
 <title>login</title>
+
+<script type="text/javascript" charset="utf-8">
+function CheckPost(){
+	if (document.getElementById("user").value=="") {
+		document.getElementById("userTable").innerHTML ="请输入帐号";
+		registerForm.username.focus();
+		return false;
+	}
+	if (document.getElementById("pwd").value=="") {
+		document.getElementById("userTable").innerHTML ="请输入密码";
+		registerForm.password.focus();
+		return false;
+	}
+	return true;
+}
+</script>
 </head>
 <body>
-<form action="" method="post">
-名字: <input type="text" name="username"><br>
-密码: <input type="password" name="password"><br>
-<input type="submit" name="submit" value="提交">
-</form>
+<div style="height:800px;text-align:center;">
+	<div style="height:100px;text-align:center;"></div>
+	<div  >
+	<form action="" method="post" name="registerForm" onsubmit="return CheckPost();">
+	名字: <input type="text" name="username" id="user"><br><br>
+	密码: <input type="password" name="password" id="pwd"><br><br>
+	<input type="submit" name="submit" value="提交">
+	</form>
+	<h6 id=userTable style="color: red"></h6> 
+	</div>
+</div>
 <br>
 </body>
 </html>
