@@ -2,8 +2,8 @@
 include("../conn.php");
 
 if(isset($_POST["submit"])){
-	$reg_name = $_POST["username"];
-	$reg_pwd = $_POST["password"];
+	$reg_name = $conn->real_escape_string($_POST["username"]);
+	$reg_pwd = $conn->real_escape_string($_POST["password"]);
 
 	$sqls = "SELECT username FROM test WHERE username = '$reg_name'";
 	$result = $conn->query($sqls);

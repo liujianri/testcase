@@ -4,18 +4,20 @@ session_start();
 
 if (isset($_SESSION["username"])) {
 	if (isset($_POST["submit"])) {
-		$casetitle=$_POST["title"];
-		$precondition = $_POST["precondition"];
-		$demand = $_POST["demand"];
-		$steps = $_POST["steps"];
-		$expects = $_POST["expects"];
-		$remarks = $_POST["remarks"];
-		$builder = $_SESSION["username"];
-		$dt = new DateTime();
+		$casetitle=$conn->real_escape_string($_POST["title"]);
+
+		$precondition = $conn->real_escape_string($_POST["precondition"]);
+		$demand = $conn->real_escape_string($_POST["demand"]);
+		$steps = $conn->real_escape_string($_POST["steps"]);
+		$expects = $conn->real_escape_string($_POST["expects"]);
+		$remarks = $conn->real_escape_string($_POST["remarks"]);
+		$builder = $conn->real_escape_string($_SESSION["username"]);
+		$dt = new DateTime(); 
 		$dts = $dt->format('Y-m-d H:i');
-		$sql = "INSERT INTO `case` (`id`, `casetitle`, `precondition`, `demand`, `steps`, `expects`, `buildtime`, `updatetime`, `builder`, `updater`, `result`, `remarks`) VALUES (NULL, '$casetitle', '$precondition', '$demand', '$steps', '$expects', '$dts', '$dts', '$builder', '$builder', '新建', '$remarks');";
+		$sql = "INSERT INTO `case` (`id`, `casetitle`, `precondition`, `demand`, `steps`, `expects`, `buildtime`, `updatetime`, `builder`, `updater`,`assignTo`, `result`, `remarks`) VALUES (NULL, '$casetitle', '$precondition', '$demand', '$steps', '$expects', '$dts', '$dts', '$builder', '$builder','$builder', '新建', '$remarks');";
 
 		if ($conn->multi_query($sql) === TRUE) {
+			$conn->close();
     		echo "<script>alert('保存成功');window.location.href='/testcase/case/caseList.php'</script>";
 		}else {
     		echo "Error: " . $sql . "<br>" . $conn->error;
@@ -50,6 +52,11 @@ if (isset($_SESSION["username"])) {
 			if (document.getElementById("precondition").value=="") {
 					document.getElementById("userTable").innerHTML ="前置条件不能为空";
 					dataform.precondition.focus();
+					return false;
+			}
+			if (document.getElementById("demand").value=="") {
+					document.getElementById("userTable").innerHTML ="没有相关需求请填写 无";
+					dataform.demand.focus();
 					return false;
 			}
 			if (document.getElementById("steps").value=="") {
@@ -100,37 +107,37 @@ if (isset($_SESSION["username"])) {
                                                         		<th></th>
                                                         	</tr>
                                                         	<tr>
-                                                        		<th style="text-align:center;">用例标题</th>
+                                                        		<th style="text-align:center;font-size: 16px;">用例标题</th>
                                                         		<td>
-                                                        		<input type="text" name="title" id="title" value="" class="form-control" autocomplete="off">
+                                                        		<input type="text" name="title" id="title" value="" style="font-size: 15px" class="form-control" autocomplete="off">
                                                         		</td>
                                                         	</tr>
                                                         	<tr>
-                                                        		<th style="text-align:center;">前置条件</th>
+                                                        		<th style="text-align:center;font-size: 16px;">前置条件</th>
                                                         		<td>
-                                                        			<textarea name="precondition" id="precondition" rows="2" class="form-control"></textarea>
+                                                        			<textarea name="precondition" id="precondition" rows="2" style="font-size: 15px" class="form-control"></textarea>
                                                         		</td>
-                                                        		<th style="text-align:center;">相关需求</th>
+                                                        		<th style="text-align:center;font-size: 16px;">相关需求</th>
                                                         		<td>
-                                                        			<input type="text" name="demand" id="demand" value="" class="form-control" autocomplete="off">
-                                                        		</td>
-                                                        	</tr>
-                                                        	<tr>
-                                                        		<th style="text-align:center;">操作步骤</th>
-                                                        		<td>
-                                                        			<textarea name="steps" id="steps" rows="5" class="form-control"></textarea>
-                                                        		</td>
-                                                        		<th style="text-align:center;">预期结果</th>
-                                                        		<td>
-                                                        			<textarea name="expects" id="expects" rows="5" class="form-control"></textarea>
+                                                        			<input type="text" name="demand" id="demand" value="" style="font-size: 15px" class="form-control" autocomplete="off">
                                                         		</td>
                                                         	</tr>
                                                         	<tr>
-                                                        		<th style="text-align:center;">
+                                                        		<th style="text-align:center;font-size: 16px;">操作步骤</th>
+                                                        		<td>
+                                                        			<textarea name="steps" id="steps" rows="10" style="font-size: 15px" class="form-control"></textarea>
+                                                        		</td>
+                                                        		<th style="text-align:center;font-size: 16px;">预期结果</th>
+                                                        		<td>
+                                                        			<textarea name="expects" id="expects" rows="10" style="font-size: 15px" class="form-control"></textarea>
+                                                        		</td>
+                                                        	</tr>
+                                                        	<tr>
+                                                        		<th style="text-align:center;font-size: 16px;">
                                                         			备注
                                                         		</th>
                                                         		<td>
-                                                        			<textarea name="remarks" id="remarks" rows="3" class="form-control"></textarea>
+                                                        			<textarea name="remarks" id="remarks" rows="3" style="font-size: 15px" class="form-control"></textarea>
                                                         		</td>
                                                         	</tr>
                                                         	<tr>

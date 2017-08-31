@@ -70,12 +70,6 @@ if (!isset($_SESSION["username"])) {
                                                                     测试结果
                                                                 </th>
                                                                 <th>
-                                                                    执行步骤
-                                                                </th>
-                                                                <th>
-                                                                    预期结果
-                                                                </th>
-                                                                <th>
                                                                     创建人
                                                                 </th>
                                                                 <th>
@@ -91,7 +85,7 @@ if (!isset($_SESSION["username"])) {
                                                         </thead>
                                                         <tbody>
                                                             <?php 
-                                                                $pagesize=1;
+                                                                $pagesize=10;
                                                                 $url=$_SERVER["REQUEST_URI"];
                                                                 $url=parse_url($url);
                                                                 $url=$url["path"];
@@ -101,7 +95,7 @@ if (!isset($_SESSION["username"])) {
                                                                 $numq=$conn->query("SELECT * FROM `case`");
                                                                 $num = $numq->num_rows;
                                                                 $p= $num/$pagesize;
-                                                                if (is_int($p)) {
+                                                                if (!is_int($p)) {
                                                                     $p = ceil($num/$pagesize);
                                                                 }
                                                                 
@@ -121,10 +115,9 @@ if (!isset($_SESSION["username"])) {
                                                                         echo "<th>".$row["casetitle"]."</th>";
                                                                         echo "<th>".$row["demand"]."</th>";
                                                                         echo "<th>".$row["result"]."</th>";
-                                                                        echo "<th>".$row["steps"]."</th>";
-                                                                        echo "<th>".$row["expects"]."</th>";
+                                                                    
                                                                         echo "<th>".$row["builder"]."</th>";
-                                                                        echo "<th>".$row["buildtime"]."</th>";
+                                                                        echo "<th>".$row["assignTo"]."</th>";
                                                                         echo "<th>".$row["updatetime"]."</th>";
                                                                         echo "<th>";
                                                                         echo "<a  href=\"\">执行</a>&nbsp&nbsp";
