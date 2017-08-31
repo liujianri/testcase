@@ -12,7 +12,7 @@ if (isset($_SESSION["username"])) {
 		$remarks = $_POST["remarks"];
 		$builder = $_SESSION["username"];
 		$dt = new DateTime();
-		$dts = $dt->format('Y-m-d H:i:s');
+		$dts = $dt->format('Y-m-d H:i');
 		$sql = "INSERT INTO `case` (`id`, `casetitle`, `precondition`, `demand`, `steps`, `expects`, `buildtime`, `updatetime`, `builder`, `updater`, `result`, `remarks`) VALUES (NULL, '$casetitle', '$precondition', '$demand', '$steps', '$expects', '$dts', '$dts', '$builder', '$builder', '新建', '$remarks');";
 
 		if ($conn->multi_query($sql) === TRUE) {
@@ -71,7 +71,7 @@ if (isset($_SESSION["username"])) {
                         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
                             <section class="content-header hide">
                                 <h1>
-                                    控制台                                    <small>Control panel</small>
+                                                                     <small>Control panel</small>
                                 </h1>
                             </section>
                             <!-- RIBBON -->

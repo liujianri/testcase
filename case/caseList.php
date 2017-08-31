@@ -1,7 +1,7 @@
 <?php
 include("../conn.php");
-session_start();
 
+session_start();
 
 if (!isset($_SESSION["username"])) {
     echo "<script>alert('未登陆');window.location.href='/testcase/login/login.php'</script>";
@@ -38,6 +38,7 @@ if (!isset($_SESSION["username"])) {
                                     <li><a  ><?php if(isset($_SESSION["username"])){echo $_SESSION["username"];} ?></a></li>
                                     <li><a  href="/testcase/login/login.php?action=logout">退出</a></li>
                                 </ol>
+                                
                             </div>
                             <!-- END RIBBON -->
                             <div class="content">
@@ -48,9 +49,11 @@ if (!isset($_SESSION["username"])) {
                                             <div class="tab-pane fade active in" id="one">
                                                 <div class="widget-body no-padding">
                                                     <div id="toolbar" class="toolbar">
-                                                        <a href="" class="btn btn-primary btn-refresh" >搜索 </a> 
-                                                        <a href="/testcase/case/editcase.php" class="btn btn-danger btn-del " >新建用例</a> 
+                                                        <a href="" class="btn btn-primary btn-refresh" >刷新 </a> 
+                                                        <a href="/testcase/case/buildcase.php" class="btn btn-danger btn-del " >新建用例</a> 
+                                                        <div class="pull-right search"><input class="form-control" type="text" placeholder="搜索"></div>
                                                         </div>
+
                                                     <table id="table" class="table table-striped table-bordered table-hover" width="100%">
                                                         <thead>
                                                             <tr>
@@ -70,24 +73,95 @@ if (!isset($_SESSION["username"])) {
                                                                     执行步骤
                                                                 </th>
                                                                 <th>
+                                                                    预期结果
+                                                                </th>
+                                                                <th>
                                                                     创建人
                                                                 </th>
                                                                 <th>
-                                                                    创建时间
+                                                                    处理人
                                                                 </th>
                                                                 <th>
                                                                     更新时间
+                                                                </th>
+                                                                <th>
+                                                                    操作
                                                                 </th>
                                                             </tr>
                                                         </thead>
                                                         <tbody>
                                                             <?php 
-                                                                $sql  = 'SELECT * FROM `case` LIMIT 5';
-                                                            ?>
+                                                                $pagesize=1;
+                                                                $url=$_SERVER["REQUEST_URI"];
+                                                                $url=parse_url($url);
+                                                                $url=$url["path"];
+                                                                $page=0;
+                                                                $pageval=0;
 
+                                                                $numq=$conn->query("SELECT * FROM `case`");
+                                                                $num = $numq->num_rows;
+                                                                $p= $num/$pagesize;
+                                                                if (is_int($p)) {
+                                                                    $p = ceil($num/$pagesize);
+                                                                }
+                                                                
+
+                                                                if(isset($_GET["page"])&&$_GET["page"]){
+                                                                    $pageval=$_GET["page"];
+                                                                    $page=($pageval-1)*$pagesize;
+                                                                    
+                                                                }
+
+                                                                $sql  = "SELECT * FROM `case` LIMIT $page ,$pagesize";
+                                                                $result = $conn->query($sql);
+                                                                if ($result->num_rows > 0) {
+                                                                    while($row = $result->fetch_assoc()){
+                                                                        echo "<tr>";
+                                                                        echo "<th>".$row["id"]."</th>";
+                                                                        echo "<th>".$row["casetitle"]."</th>";
+                                                                        echo "<th>".$row["demand"]."</th>";
+                                                                        echo "<th>".$row["result"]."</th>";
+                                                                        echo "<th>".$row["steps"]."</th>";
+                                                                        echo "<th>".$row["expects"]."</th>";
+                                                                        echo "<th>".$row["builder"]."</th>";
+                                                                        echo "<th>".$row["buildtime"]."</th>";
+                                                                        echo "<th>".$row["updatetime"]."</th>";
+                                                                        echo "<th>";
+                                                                        echo "<a  href=\"\">执行</a>&nbsp&nbsp";
+                                                                        echo "<a  href=\"\">修改</a>&nbsp&nbsp";
+                                                                        echo "<a  href=\"\">指派</a>&nbsp&nbsp";
+                                                                        echo "<a  href=\"\">删除</a>&nbsp&nbsp";
+                                                                        echo "</th>";
+                                                                        echo "</tr>";
+                                                                    }
+                                                                }
+                                                                
+                                                            ?>
+                                                            <tr>
+                                                                <div style="float:right; clear:none;" class="pager form-inline">
+                                                                    <?php 
+                                                                     if ($num>$pagesize) {
+                                                                        if($pageval<=1)$pageval=1;
+                                                                        $next=$pageval+1;
+                                                                        if ($pageval>=$p) {
+                                                                            $next=$p;
+                                                                        }
+                                                                        $Previous =$pageval-1;
+                                                                        echo "共".$num."条&nbsp&nbsp每页".$pagesize."条&nbsp&nbsp"."&nbsp &nbsp".$pageval."/".$p."&nbsp &nbsp &nbsp"."<a href=$url>首页</a>
+                                                                    <a href=$url?page=".$next.">下一页</a>
+                                                                    <a href=$url?page=".$Previous.">上一页</a>
+                                                                    <a href=$url?page=".$p.">末页</a>";
+
+                                                                     }else{
+                                                                         echo "共".$num."条&nbsp";
+                                                                     }
+                                                                    
+                                                                    ?>
+                                                                </div>
+                                                                
+                                                            </tr>
                                                         </tbody>
                                                     </table>
-
 
                                                 </div>
                                             </div>
