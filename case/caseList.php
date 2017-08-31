@@ -6,6 +6,32 @@ session_start();
 if (!isset($_SESSION["username"])) {
     echo "<script>alert('未登陆');window.location.href='/testcase/login/login.php'</script>";
 }
+$pagesize=10;
+$url=$_SERVER["REQUEST_URI"];
+$url=parse_url($url);
+$url=$url["path"];
+$page=0;
+$pageval=0;
+
+$numq=$conn->query("SELECT * FROM `case`");
+$num = $numq->num_rows;
+$p= $num/$pagesize;
+if (!is_int($p)) {
+    $p = ceil($num/$pagesize);
+}
+
+
+if(isset($_GET["page"])&&$_GET["page"]){
+    $pageval=$_GET["page"];
+    $page=($pageval-1)*$pagesize;
+
+}
+if(isset($_GET["orderBy"])&&$_GET["orderBy"]){
+    $orderBy=$_GET["orderBy"];
+   
+
+}
+
 ?>
 
 <!DOCTYPE html>
@@ -74,6 +100,9 @@ if (!isset($_SESSION["username"])) {
                                                                 </th>
                                                                 <th>
                                                                     处理人
+                                                                    <?php  
+                                                                    echo "<a href=$url?page=".$pageval."&orderBy=bdater".">||</a>";
+                                                                    ?>
                                                                 </th>
                                                                 <th>
                                                                     更新时间
@@ -85,28 +114,9 @@ if (!isset($_SESSION["username"])) {
                                                         </thead>
                                                         <tbody>
                                                             <?php 
-                                                                $pagesize=10;
-                                                                $url=$_SERVER["REQUEST_URI"];
-                                                                $url=parse_url($url);
-                                                                $url=$url["path"];
-                                                                $page=0;
-                                                                $pageval=0;
+                                                            
 
-                                                                $numq=$conn->query("SELECT * FROM `case`");
-                                                                $num = $numq->num_rows;
-                                                                $p= $num/$pagesize;
-                                                                if (!is_int($p)) {
-                                                                    $p = ceil($num/$pagesize);
-                                                                }
-                                                                
-
-                                                                if(isset($_GET["page"])&&$_GET["page"]){
-                                                                    $pageval=$_GET["page"];
-                                                                    $page=($pageval-1)*$pagesize;
-                                                                    
-                                                                }
-
-                                                                $sql  = "SELECT * FROM `case` LIMIT $page ,$pagesize";
+                                                                $sql  = "SELECT * FROM `case` order by id desc LIMIT $page ,$pagesize";
                                                                 $result = $conn->query($sql);
                                                                 if ($result->num_rows > 0) {
                                                                     while($row = $result->fetch_assoc()){
