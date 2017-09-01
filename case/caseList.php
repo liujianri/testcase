@@ -34,8 +34,11 @@ if(isset($_GET["orderBy"])&&$_GET["orderBy"]){
     $sort = $_GET["sort"];
 
     $ar = array("ID" ,"demand","result","builder","assignTo","updatetime", "desc","asc");
-    if (!in_array($orderBy, $ar)|| !in_array($sort, $ar)) {
+    if (!in_array($orderBy, $ar)) {
         $orderBy = "updatetime";
+
+    }
+    if (!in_array($sort, $ar)) {
         $sort="desc";
     }
     if ($sort=="desc") {
@@ -57,7 +60,7 @@ $sql  = "SELECT * FROM `case` order by $orderBy $sort LIMIT $page ,$pagesize";
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta name="renderer" content="webkit">
         <script src="https://cdn.bootcss.com/jquery/2.1.1/jquery.min.js"></script>
-        <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+        
         <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js" integrity="sha384-b/U6ypiBEHpOf/4+1nzFpr53nxSS+GLCkfwBdFNTxtclqqenISfwAzpKaMNFNmj4" crossorigin="anonymous"></script>
         <link rel="stylesheet" href="../static/bootstrap/css/bootstrap.min.css" type="text/css">
         <script src="../static/bootstrap/js/bootstrap.min.js" type="text/javascript"></script>
@@ -84,12 +87,10 @@ $sql  = "SELECT * FROM `case` order by $orderBy $sort LIMIT $page ,$pagesize";
                                     <li><a  ><?php if(isset($_SESSION["username"])){echo $_SESSION["username"];} ?></a></li>
                                     <li><a  href="/testcase/login/logout.php?action=logout">退出</a></li>
                                 </ol>
-                                
                             </div>
                             <!-- END RIBBON -->
                             <div class="content">
                                 <div class="panel panel-default panel-intro">
-
                                     <div class="panel-body">
                                         <div id="myTabContent" class="tab-content">
                                             <div class="tab-pane fade active in" id="one">
@@ -163,10 +164,10 @@ $sql  = "SELECT * FROM `case` order by $orderBy $sort LIMIT $page ,$pagesize";
                                                                         echo "<th>".$row["assignTo"]."</th>";
                                                                         echo "<th>".$row["updatetime"]."</th>";
                                                                         echo "<th>";
-                                                                        echo "<a  href=\"\">执行</a>&nbsp&nbsp";
+                                                                        echo "<a  data-toggle=\"modal\" data-target=\"#exampleModal\" data-whatever=".$row["id"].">执行</a>&nbsp&nbsp";
                                                                         echo "<a  href=\"\">修改</a>&nbsp&nbsp";
                                                                         echo "<a  href=\"\">指派</a>&nbsp&nbsp";
-                                                                        echo "<a  href=\"\">删除</a>&nbsp&nbsp";
+                                
                                                                         echo "</th>";
                                                                         echo "</tr>";
                                                                     }
@@ -204,10 +205,8 @@ $sql  = "SELECT * FROM `case` order by $orderBy $sort LIMIT $page ,$pagesize";
                                                             </tr>
                                                         </tbody>
                                                     </table>
-
                                                 </div>
                                             </div>
-
                                         </div>
                                     </div>
                                 </div>
@@ -218,27 +217,52 @@ $sql  = "SELECT * FROM `case` order by $orderBy $sort LIMIT $page ,$pagesize";
             </div>
         </div>
         <div>
-        <a  data-toggle="modal"  href="./pou/rem.html"  data-target="#myModal" >开始演示模态框</a>
+            <button type="button" id="bt" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal" data-whatever="@mdo">Open modal for @mdo</button>
         </div>
-<!-- 模态框（Modal） -->
-<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-labelledby="modal" data-backdrop = "false"  >
-    <div class="modal-dialog" >
-        <div class="modal-content"> 
-                <div class="modal-header" >
-                
-            </div>
-            <div class="modal-body">
-                确定删除吗？
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">关闭
-                </button>
-                <button type="button" class="btn btn-primary">
-                    删除
-                </button>
-            </div>
-        </div><!-- /.modal-content -->
-    </div><!-- /.modal -->
+        <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
+  <div class="modal-dialog" role="document">
+    <div id="di1" class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="exampleModalLabel">New message</h4>
+      </div>
+      <div class="modal-body">
+        <form>
+          <div class="form-group">
+            <label for="recipient-name" class="control-label">Recipient:</label>
+            <input type="text" class="form-control" id="recipient-name">
+          </div>
+          <div class="form-group">
+            <label for="message-text" class="control-label">Message:</label>
+            <textarea class="form-control" id="message-text"></textarea>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary">Send message</button>
+      </div>
+    </div>
+  </div>
 </div>
+<script type="text/javascript">
+  $('#exampleModal').on('show.bs.modal', function (event) {
+
+    var button = $(event.relatedTarget) // Button that triggered the modal
+    var recipient = button.data('whatever') // Extract info from data-* attributes
+  // If necessary, you could initiate an AJAX request here (and then do the updating in a callback).
+  // Update the modal's content. We'll use jQuery here, but you could use a data binding library or other methods instead.
+    var modal = $(this)
+    $.get("./getdata.php?ID=1",function(datas,status){
+        modal.find('.modal-body textarea').val(datas)
+    });
+
+    
+});
+
+$("#exampleModal").on("hidden.bs.modal", function(event) {  
+    $(this).removeData("modal");  
+}); 
+ </script>
     </body>
 </html>
