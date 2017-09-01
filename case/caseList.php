@@ -24,74 +24,29 @@ if (!is_int($p)) {
 if(isset($_GET["page"])&&$_GET["page"]){
     $pageval=$_GET["page"];
     $page=($pageval-1)*$pagesize;
-
 }
+
 $orderBy = "updatetime";
-$sort = "desc";
-$sql  = "SELECT * FROM `case` order by updatetime desc LIMIT $page ,$pagesize";
+$sort="desc";
+
 if(isset($_GET["orderBy"])&&$_GET["orderBy"]){
     $orderBy=$_GET["orderBy"];
-    
-    switch ($orderBy) {
-        case 'ID':
-            if ($sort=="desc") {
-                $sql  = "SELECT * FROM `case` order by id desc LIMIT $page ,$pagesize";
-                $sort = "asc";
-            }else{
-                $sql  = "SELECT * FROM `case` order by id asc LIMIT $page ,$pagesize"; 
-                $sort = "desc";
-            }
-            break;
-        case 'demand':
-            if ($sort=="desc") {
-                $sql  = "SELECT * FROM `case` order by demand desc LIMIT $page ,$pagesize";
-                $sort = "asc";
-            }else{
-                $sql  = "SELECT * FROM `case` order by demand asc LIMIT $page ,$pagesize"; 
-                $sort = "desc";
-            }
-            break;
-        case 'result':
-            if ($sort=="desc") {
-                $sql  = "SELECT * FROM `case` order by result desc LIMIT $page ,$pagesize";
-                $sort = "asc";
-            }else{
-                $sql  = "SELECT * FROM `case` order by result asc LIMIT $page ,$pagesize"; 
-                $sort = "desc";
-            }
-            break;
-        case 'builder':
-            if ($sort=="desc") {
-                $sql  = "SELECT * FROM `case` order by builder desc LIMIT $page ,$pagesize";
-                $sort = "asc";
-            }else{
-                $sql  = "SELECT * FROM `case` order by builder asc LIMIT $page ,$pagesize"; 
-                $sort = "desc";
-            }
-            break;
-        case 'assignTo':
-            if ($sort=="desc") {
-                $sql  = "SELECT * FROM `case` order by assignTo desc LIMIT $page ,$pagesize";
-                $sort = "asc";
-            }else{
-                $sql  = "SELECT * FROM `case` order by assignTo asc LIMIT $page ,$pagesize"; 
-                $sort = "desc";
-            }
-            break;
-        case 'updatetime':
-            if ($sort=="desc") {
-                $sql  = "SELECT * FROM `case` order by updatetime desc LIMIT $page ,$pagesize";
-                $sort = "asc";
-            }else{
-                $sql  = "SELECT * FROM `case` order by updatetime asc LIMIT $page ,$pagesize"; 
-                $sort = "desc";
-            }
-            break;
-        default:
-            $sql  = "SELECT * FROM `case` order by id desc LIMIT $page ,$pagesize";
-            break;
+    $sort = $_GET["sort"];
+
+    $ar = array("ID" ,"demand","result","builder","assignTo","updatetime", "desc","asc");
+    if (!in_array($orderBy, $ar)|| !in_array($sort, $ar)) {
+        $orderBy = "updatetime";
+        $sort="desc";
+    }
+    if ($sort=="desc") {
+        $sort="asc";
+    }else{
+        $sort="desc";
     }
 }
+$sql  = "SELECT * FROM `case` order by $orderBy $sort LIMIT $page ,$pagesize";
+
+
 ?>
 
 <!DOCTYPE html>
@@ -222,6 +177,12 @@ if(isset($_GET["orderBy"])&&$_GET["orderBy"]){
                                                                 <div style="float:right; clear:none;" class="pager form-inline">
                                                                     <?php 
                                                                      if ($num>$pagesize) {
+
+                                                                        if ($sort=="desc") {
+                                                                            $sort="asc";
+                                                                        }else{
+                                                                            $sort="desc";
+                                                                        }
                                                                         if($pageval<=1)$pageval=1;
                                                                         $next=$pageval+1;
                                                                         if ($pageval>=$p) {
