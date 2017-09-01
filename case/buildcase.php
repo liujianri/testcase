@@ -85,7 +85,7 @@ if (isset($_SESSION["username"])) {
                             <div id="ribbon">
                                 <ol class="breadcrumb pull-right">
                                     <li><a  ><?php if(isset($_SESSION["username"])){echo $_SESSION["username"];} ?></a></li>
-                                    <li><a  href="/testcase/login/login.php?action=logout">退出</a></li>
+                                    <li><a  href="/testcase/login/logout.php?action=logout">退出</a></li>
                                 </ol>
                             </div>
                             <!-- END RIBBON -->

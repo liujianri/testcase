@@ -1,8 +1,8 @@
 <?php
-include("../conn.php");
+
 
 session_start();
-
+include("../conn.php");
 if (!isset($_SESSION["username"])) {
     echo "<script>alert('未登陆');window.location.href='/testcase/login/login.php'</script>";
 }
@@ -26,12 +26,72 @@ if(isset($_GET["page"])&&$_GET["page"]){
     $page=($pageval-1)*$pagesize;
 
 }
+$orderBy = "updatetime";
+$sort = "desc";
+$sql  = "SELECT * FROM `case` order by updatetime desc LIMIT $page ,$pagesize";
 if(isset($_GET["orderBy"])&&$_GET["orderBy"]){
     $orderBy=$_GET["orderBy"];
-   
-
+    
+    switch ($orderBy) {
+        case 'ID':
+            if ($sort=="desc") {
+                $sql  = "SELECT * FROM `case` order by id desc LIMIT $page ,$pagesize";
+                $sort = "asc";
+            }else{
+                $sql  = "SELECT * FROM `case` order by id asc LIMIT $page ,$pagesize"; 
+                $sort = "desc";
+            }
+            break;
+        case 'demand':
+            if ($sort=="desc") {
+                $sql  = "SELECT * FROM `case` order by demand desc LIMIT $page ,$pagesize";
+                $sort = "asc";
+            }else{
+                $sql  = "SELECT * FROM `case` order by demand asc LIMIT $page ,$pagesize"; 
+                $sort = "desc";
+            }
+            break;
+        case 'result':
+            if ($sort=="desc") {
+                $sql  = "SELECT * FROM `case` order by result desc LIMIT $page ,$pagesize";
+                $sort = "asc";
+            }else{
+                $sql  = "SELECT * FROM `case` order by result asc LIMIT $page ,$pagesize"; 
+                $sort = "desc";
+            }
+            break;
+        case 'builder':
+            if ($sort=="desc") {
+                $sql  = "SELECT * FROM `case` order by builder desc LIMIT $page ,$pagesize";
+                $sort = "asc";
+            }else{
+                $sql  = "SELECT * FROM `case` order by builder asc LIMIT $page ,$pagesize"; 
+                $sort = "desc";
+            }
+            break;
+        case 'assignTo':
+            if ($sort=="desc") {
+                $sql  = "SELECT * FROM `case` order by assignTo desc LIMIT $page ,$pagesize";
+                $sort = "asc";
+            }else{
+                $sql  = "SELECT * FROM `case` order by assignTo asc LIMIT $page ,$pagesize"; 
+                $sort = "desc";
+            }
+            break;
+        case 'updatetime':
+            if ($sort=="desc") {
+                $sql  = "SELECT * FROM `case` order by updatetime desc LIMIT $page ,$pagesize";
+                $sort = "asc";
+            }else{
+                $sql  = "SELECT * FROM `case` order by updatetime asc LIMIT $page ,$pagesize"; 
+                $sort = "desc";
+            }
+            break;
+        default:
+            $sql  = "SELECT * FROM `case` order by id desc LIMIT $page ,$pagesize";
+            break;
+    }
 }
-
 ?>
 
 <!DOCTYPE html>
@@ -41,6 +101,11 @@ if(isset($_GET["orderBy"])&&$_GET["orderBy"]){
         <title>Case List</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta name="renderer" content="webkit">
+        <script src="https://cdn.bootcss.com/jquery/2.1.1/jquery.min.js"></script>
+        <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js" integrity="sha384-b/U6ypiBEHpOf/4+1nzFpr53nxSS+GLCkfwBdFNTxtclqqenISfwAzpKaMNFNmj4" crossorigin="anonymous"></script>
+        <link rel="stylesheet" href="../static/bootstrap/css/bootstrap.min.css" type="text/css">
+        <script src="../static/bootstrap/js/bootstrap.min.js" type="text/javascript"></script>
 
         <link rel="shortcut icon" href="assets/img/favicon.ico" />
         <!-- Loading Bootstrap -->
@@ -55,14 +120,14 @@ if(isset($_GET["orderBy"])&&$_GET["orderBy"]){
                         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
                             <section class="content-header hide">
                                 <h1>
-                                                                      <small>Control panel</small>
+                                 <small>Control panel</small>
                                 </h1>
                             </section>
                             <!-- RIBBON -->
                             <div id="ribbon">
                                 <ol class="breadcrumb pull-right">
                                     <li><a  ><?php if(isset($_SESSION["username"])){echo $_SESSION["username"];} ?></a></li>
-                                    <li><a  href="/testcase/login/login.php?action=logout">退出</a></li>
+                                    <li><a  href="/testcase/login/logout.php?action=logout">退出</a></li>
                                 </ol>
                                 
                             </div>
@@ -75,7 +140,7 @@ if(isset($_GET["orderBy"])&&$_GET["orderBy"]){
                                             <div class="tab-pane fade active in" id="one">
                                                 <div class="widget-body no-padding">
                                                     <div id="toolbar" class="toolbar">
-                                                        <a href="" class="btn btn-primary btn-refresh" >刷新 </a> 
+                                                        <a href="javascript:location.reload();" class="btn btn-primary btn-refresh" >刷新 </a> 
                                                         <a href="/testcase/case/buildcase.php" class="btn btn-danger btn-del " >新建用例</a> 
                                                         <div class="pull-right search"><input class="form-control" type="text" placeholder="搜索"></div>
                                                         </div>
@@ -85,27 +150,42 @@ if(isset($_GET["orderBy"])&&$_GET["orderBy"]){
                                                             <tr>
                                                                 <th>
                                                                     ID
+                                                                    <?php  
+                                                                    echo "<a href=$url?page=".$pageval."&orderBy=ID&sort=".$sort.">&#8595&#8593</a>";
+                                                                    ?>
                                                                 </th>
                                                                 <th>
                                                                     用例标题
                                                                 </th>
                                                                 <th>
                                                                     相关需求
+                                                                    <?php  
+                                                                    echo "<a href=$url?page=".$pageval."&orderBy=demand&sort=".$sort.">&#8595&#8593</a>";
+                                                                    ?>
                                                                 </th>
                                                                 <th>
                                                                     测试结果
+                                                                    <?php  
+                                                                    echo "<a href=$url?page=".$pageval."&orderBy=result&sort=".$sort.">&#8595&#8593</a>";
+                                                                    ?>
                                                                 </th>
                                                                 <th>
                                                                     创建人
+                                                                    <?php  
+                                                                    echo "<a href=$url?page=".$pageval."&orderBy=builder&sort=".$sort.">&#8595&#8593</a>";
+                                                                    ?>
                                                                 </th>
                                                                 <th>
                                                                     处理人
                                                                     <?php  
-                                                                    echo "<a href=$url?page=".$pageval."&orderBy=bdater".">||</a>";
+                                                                    echo "<a href=$url?page=".$pageval."&orderBy=assignTo&sort=".$sort.">&#8595&#8593</a>";
                                                                     ?>
                                                                 </th>
                                                                 <th>
                                                                     更新时间
+                                                                    <?php  
+                                                                    echo "<a href=$url?page=".$pageval."&orderBy=updatetime&sort=".$sort.">&#8595&#8593</a>";
+                                                                    ?>
                                                                 </th>
                                                                 <th>
                                                                     操作
@@ -115,8 +195,6 @@ if(isset($_GET["orderBy"])&&$_GET["orderBy"]){
                                                         <tbody>
                                                             <?php 
                                                             
-
-                                                                $sql  = "SELECT * FROM `case` order by id desc LIMIT $page ,$pagesize";
                                                                 $result = $conn->query($sql);
                                                                 if ($result->num_rows > 0) {
                                                                     while($row = $result->fetch_assoc()){
@@ -150,15 +228,15 @@ if(isset($_GET["orderBy"])&&$_GET["orderBy"]){
                                                                             $next=$p;
                                                                         }
                                                                         $Previous =$pageval-1;
-                                                                        echo "共".$num."条&nbsp&nbsp每页".$pagesize."条&nbsp&nbsp"."&nbsp &nbsp".$pageval."/".$p."&nbsp &nbsp &nbsp"."<a href=$url>首页</a>
-                                                                    <a href=$url?page=".$next.">下一页</a>
-                                                                    <a href=$url?page=".$Previous.">上一页</a>
-                                                                    <a href=$url?page=".$p.">末页</a>";
+                                                                        echo "共".$num."条&nbsp&nbsp每页".$pagesize."条&nbsp&nbsp"."&nbsp &nbsp".$pageval."/".$p."&nbsp &nbsp &nbsp"."<a href=$url"."?orderBy=".$orderBy."&sort=".$sort.">首页</a>
+                                                                    <a href=$url?page=".$next."&orderBy=".$orderBy."&sort=".$sort.">&nbsp&nbsp下一页</a>
+                                                                    <a href=$url?page=".$Previous."&orderBy=".$orderBy."&sort=".$sort.">&nbsp&nbsp上一页</a>
+                                                                    <a href=$url?page=".$p."&orderBy=".$orderBy."&sort=".$sort.">&nbsp&nbsp末页</a>";
 
                                                                      }else{
                                                                          echo "共".$num."条&nbsp";
                                                                      }
-                                                                    
+                                                                    $conn->close();
                                                                     ?>
                                                                 </div>
                                                                 
@@ -178,6 +256,28 @@ if(isset($_GET["orderBy"])&&$_GET["orderBy"]){
                 </div>
             </div>
         </div>
-        <script src="assets/js/require.min.js" data-main="assets/js/require-backend.min.js"></script>
+        <div>
+        <a  data-toggle="modal"  href="./pou/rem.html"  data-target="#myModal" >开始演示模态框</a>
+        </div>
+<!-- 模态框（Modal） -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-labelledby="modal" data-backdrop = "false"  >
+    <div class="modal-dialog" >
+        <div class="modal-content"> 
+                <div class="modal-header" >
+                
+            </div>
+            <div class="modal-body">
+                确定删除吗？
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭
+                </button>
+                <button type="button" class="btn btn-primary">
+                    删除
+                </button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal -->
+</div>
     </body>
 </html>

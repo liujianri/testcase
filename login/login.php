@@ -1,22 +1,22 @@
 <?php
-include("../conn.php");
-session_start();
 
+
+include("../conn.php");
 if (isset($_POST["submit"])) 
 {
 $user_name =$_POST["username"];
 $pwd = $_POST["password"];
 
-$sql = "SELECT username,password,isVIP FROM test WHERE username = '$user_name'";
+$sql = "SELECT username,password,isVIP FROM test WHERE username = '$user_name' ";
 $result = $conn->query($sql);
 
 if($result->num_rows ==1) 
 {
     $row = $result->fetch_assoc();
     if($row["password"]==$pwd){
+    	session_start();
     	$_SESSION['username']=$row['username'];
     	$_SESSION['isVIP'] = $row['isVIP'];
-
     	header('Location: /testcase/case/caseList.php');
 
     }else{
@@ -29,13 +29,6 @@ $conn->close();
 
 }
 
-if(isset($_GET['action'])&&$_GET['action'] == "logout"){
-	if (isset($_SESSION["username"])) {
-		session_unset();
-		session_destroy();
-    	echo "<script>alert('注销成功');</script>";
-	} 
-}
 ?>
 
 <html>
