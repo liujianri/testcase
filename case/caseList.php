@@ -1,6 +1,4 @@
 <?php
-
-
 session_start();
 include("../conn.php");
 if (!isset($_SESSION["username"])) {
@@ -33,7 +31,7 @@ if(isset($_GET["orderBy"])&&$_GET["orderBy"]){
     $orderBy=$_GET["orderBy"];
     $sort = $_GET["sort"];
 
-    $ar = array("ID" ,"demand","result","builder","assignTo","updatetime", "desc","asc");
+    $ar = array("id" ,"demand","result","builder","assignTo","updatetime", "desc","asc");
     if (!in_array($orderBy, $ar)) {
         $orderBy = "updatetime";
 
@@ -48,7 +46,6 @@ if(isset($_GET["orderBy"])&&$_GET["orderBy"]){
     }
 }
 $sql  = "SELECT * FROM `case` order by $orderBy $sort LIMIT $page ,$pagesize";
-
 
 ?>
 
@@ -164,9 +161,9 @@ $sql  = "SELECT * FROM `case` order by $orderBy $sort LIMIT $page ,$pagesize";
                                                                         echo "<th>".$row["assignTo"]."</th>";
                                                                         echo "<th>".$row["updatetime"]."</th>";
                                                                         echo "<th>";
-                                                                        echo "<a  data-toggle=\"modal\" data-target=\"#exampleModal\" data-whatever=".$row["id"].">执行</a>&nbsp&nbsp";
-                                                                        echo "<a  href=\"\">修改</a>&nbsp&nbsp";
-                                                                        echo "<a  href=\"\">指派</a>&nbsp&nbsp";
+                                                                        echo "<a href=\"\" data-toggle=\"modal\" data-target=\"#exampleModal\" data-whatever=".$row["id"]."&action=runCase".">执行</a>&nbsp&nbsp";
+                                                                        echo "<a  href=\"\"  data-toggle=\"modal\" data-target=\"#exampleModal\" data-whatever=".$row["id"]."&action=reviseCase".">修改</a>&nbsp&nbsp";
+                                                                        echo "<a  href=\"\" data-toggle=\"modal\" data-target=\"#exampleModal\" data-whatever=".$row["id"]."&action=assignTo".">指派</a>&nbsp&nbsp";
                                 
                                                                         echo "</th>";
                                                                         echo "</tr>";
@@ -216,53 +213,117 @@ $sql  = "SELECT * FROM `case` order by $orderBy $sort LIMIT $page ,$pagesize";
                 </div>
             </div>
         </div>
-        <div>
-            <button type="button" id="bt" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal" data-whatever="@mdo">Open modal for @mdo</button>
+        
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" >
+<div class="modal-dialog" role="document" style="margin: auto;width: 700px;max-width: 700px;">
+<div id="di1" class="modal-content" style="width: 700px; max-width:700px">
+      <form >
+        <div class="modal-body" >
+        <div id="di" > 
         </div>
-        <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
-  <div class="modal-dialog" role="document">
-    <div id="di1" class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title" id="exampleModalLabel">New message</h4>
-      </div>
-      <div class="modal-body">
-        <form>
-          <div class="form-group">
-            <label for="recipient-name" class="control-label">Recipient:</label>
-            <input type="text" class="form-control" id="recipient-name">
-          </div>
-          <div class="form-group">
-            <label for="message-text" class="control-label">Message:</label>
-            <textarea class="form-control" id="message-text"></textarea>
-          </div>
-        </form>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary">Send message</button>
-      </div>
-    </div>
-  </div>
+        </div>
+        <div class="modal-footer">
+            <div id="sel" style="width: 20%">  
+            </div>
+            <button type="submit" id="reset1" class="btn btn-primary">保存</button>
+            <button type="button"  class="btn btn-default" data-dismiss="modal">关闭</button>
+        </div>
+    </form>
+</div>
+</div>
 </div>
 <script type="text/javascript">
   $('#exampleModal').on('show.bs.modal', function (event) {
 
     var button = $(event.relatedTarget) // Button that triggered the modal
-    var recipient = button.data('whatever') // Extract info from data-* attributes
-  // If necessary, you could initiate an AJAX request here (and then do the updating in a callback).
-  // Update the modal's content. We'll use jQuery here, but you could use a data binding library or other methods instead.
+    var recipient = button.data('whatever') 
     var modal = $(this)
-    $.get("./getdata.php?ID=1",function(datas,status){
-        modal.find('.modal-body textarea').val(datas)
+    var url = "./getdata.php?ID="+recipient
+    var ht = ""
+    var htsel = ""
+    //modal.find("modal-body").load("./getdata")
+    //initView(); 
+    $.getJSON(url,function(datas,status){
+
+        switch (datas.action) {
+            case 'runCase':
+                ht = "<input type=\"hidden\" id=\"getid\" value="+datas.id+" ></input><label>步骤:</label><h6>"+datas.steps+"</h6><label>预期结果:</label><h6 >"+datas.expects+"</h6><label>备注:</label><h6 >"+datas.remarks+"</h6>"
+                htsel = "<select name=\"test_result\" id=\"test_result\"  class=\"form-control\"><option value=\"忽略\" data-keys=\"hulue hl\">忽略</option><option value=\"通过\" selected=\"selected\" data-keys=\"tongguo\">通过</option><option value=\"失败\" data-keys=\"shibai\">失败</option><option value=\"阻塞\" data-keys=\"zusai\">阻塞</option></select>"
+                break;
+            case 'reviseCase':
+                ht = "<input type=\"hidden\" id=\"getid\" value="+datas.id+" ></input><label style=\"width: 65px\">标题:</label><input id=\"tit\" style=\"width: 100%\" value="+datas.casetitle+"></input><br><label style=\"width: 65px\">步骤:</label><textarea id=\"ste\" rows = \"5\" style=\"width: 100%\">"+datas.steps+"</textarea><br><label style=\"width: 65px\">预期结果:</label><textarea  id=\"ex\" rows = \"5\" style=\"width: 100%\" >"+datas.expects+"</textarea><label style=\"width: 65px\">备注:</label><textarea  id=\"rema\" rows = \"5\" style=\"width: 100%\" >"+datas.remarks+"</textarea>"
+                break;
+            case 'assignTo':
+                ht = "<input type=\"hidden\" id=\"getid\" value="+datas.id+" ></input><label style=\"width: 65px;font: 18px;\">重新指派</label><select id=\"assign\" style=\"width: 50%\" name=\"steps\" id=\"steps\" class=\"form-control\">";
+                for(var i=0; i<getJsonLength(datas)-2; i++){
+                    ht =ht+"<option value="+datas[i]+" data-keys="+datas[i]+">"+datas[i]+" </option>";
+                }
+                ht+= "</select>"
+                break;
+            default:
+                break;
+        }
+
+        modal.find('#di').html(ht)
+        modal.find('#sel').html(htsel)
+        //modal.find('#steps').text(datas.steps)
+        //modal.find('#expects').text(datas.expects)
     });
 
-    
 });
+
+$('#reset1').click(function(event){
+    var jsonD ="";
+    var getid = document.getElementById("getid").value;
+    
+    if ($('#test_result').length>0) {
+        var test_result = document.getElementById("test_result").value;
+        jsonD = {"id":getid,"test_result":test_result};
+    }
+    if ($('#tit').length>0) {
+        var title = document.getElementById("tit").value;
+        var steps = document.getElementById("ste").value;
+        var expects = document.getElementById("ex").value;
+        var remarks = document.getElementById("rema").value;
+        var jsonD = {"title":title,"steps":steps,"id":getid,"expects":expects,"remarks":remarks};
+    }
+    if ($('#assign').length>0) {
+        var assignTo = document.getElementById("assign").value;
+        jsonD = {"id":getid,"assignTo":assignTo};
+        
+    }
+    
+    $.ajax({
+            type:"POST",
+            url:"./getdata.php",
+            data:jsonD,
+            datatype: "json",
+            beforeSend:function(){},            
+            success:function(data){   
+
+            },
+            error: function(){
+            }         
+         });
+    return true;
+});
+
+function getJsonLength(jsonData){
+
+    var jsonLength = 0;
+
+    for(var item in jsonData){
+
+        jsonLength++;
+
+    }
+
+    return jsonLength;
+}
 
 $("#exampleModal").on("hidden.bs.modal", function(event) {  
     $(this).removeData("modal");  
 }); 
- </script>
-    </body>
+</script>
+</body>
 </html>
