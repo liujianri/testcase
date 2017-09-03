@@ -1,26 +1,35 @@
-<?php
+<?php 
 session_start();
 include("../conn.php");
-if (!isset($_SESSION["username"])) {
-    echo "<script>alert('未登陆');window.location.href='/testcase/login/login.php'</script>";
-}
+
 $pagesize=10;
 $url=$_SERVER["REQUEST_URI"];
 $url=parse_url($url);
 $url=$url["path"];
 $page=0;
 $pageval=0;
+if (!isset($_SESSION["username"])) {
+    echo "<script>alert('未登陆');window.location.href='/testcase/login/login.php'</script>";
+}
+if (isset($_GET["search"])&&!isset($_GET["orderBy"])) {
+    $search = $conn->real_escape_string($_GET["search"]);
 
-$numq=$conn->query("SELECT * FROM `case`");
-$num = $numq->num_rows;
-$p= $num/$pagesize;
-if (!is_int($p)) {
-    $p = ceil($num/$pagesize);
+    $sql = "SELECT * FROM `case` WHERE `steps` LIKE '%$search%' OR `demand` LIKE '%$search%' OR 'id' LIKE '%$search%' OR `builder` LIKE '%$search%' OR `updater` LIKE '%$search%' OR `assignTo` LIKE '%$search%' OR `casetitle` LIKE '%$search%' OR `expects` LIKE '%$search%'  OR `remarks` LIKE '%$search%' OR `result` LIKE '%$search%';";
+    
+ 	$result = $conn->query($sql);
+    $num = $result->num_rows;
+    $p= $num/$pagesize;
+    if (!is_int($p)) {
+    	$p = ceil($num/$pagesize);
+    }
+    error_log($num, 3, '/Applications/MAMP/logs/php_error.log');
 }
 
 
 if(isset($_GET["page"])){
+
     $pageval=$_GET["page"];
+    if($pageval<=1)$pageval=1;
     $page=($pageval-1)*$pagesize;
 }
 
@@ -30,7 +39,7 @@ $sort="desc";
 if(isset($_GET["orderBy"])){
     $orderBy=$_GET["orderBy"];
     $sort = $_GET["sort"];
-
+	$search = $conn->real_escape_string($_GET["search"]);
     $ar = array("ID" ,"demand","result","builder","assignTo","updatetime", "desc","asc");
     if (!in_array($orderBy, $ar)) {
         $orderBy = "updatetime";
@@ -44,12 +53,23 @@ if(isset($_GET["orderBy"])){
     }else{
         $sort="desc";
     }
+
+    $sql = "SELECT * FROM `case` WHERE `steps` LIKE '%$search%' OR `demand` LIKE '%$search%' OR 'id' LIKE '%$search%' OR `builder` LIKE '%$search%' OR `updater` LIKE '%$search%' OR `assignTo` LIKE '%$search%' OR `casetitle` LIKE '%$search%' OR `expects` LIKE '%$search%'  OR `remarks` LIKE '%$search%' OR `result` LIKE '%$search%';";
+
+    $result = $conn->query($sql);
+    $num = $result->num_rows;
+    $p= $num/$pagesize;
+    if (!is_int($p)) {
+    	$p = ceil($num/$pagesize);
+    }
+    error_log($num, 3, '/Applications/MAMP/logs/php_error.log');
+
+    $sql = "SELECT * FROM `case` WHERE `steps` LIKE '%$search%' OR `demand` LIKE '%$search%' OR 'id' LIKE '%$search%' OR `builder` LIKE '%$search%' OR `updater` LIKE '%$search%' OR `assignTo` LIKE '%$search%' OR `casetitle` LIKE '%$search%' OR `expects` LIKE '%$search%'  OR `remarks` LIKE '%$search%' OR `result` LIKE '%$search%' order by $orderBy $sort LIMIT $page ,$pagesize ";
 }
-$sql  = "SELECT * FROM `case` order by $orderBy $sort LIMIT $page ,$pagesize";
+ ?>
 
-?>
 
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="zh-cn">
     <head>
         <meta charset="utf-8">
@@ -65,8 +85,7 @@ $sql  = "SELECT * FROM `case` order by $orderBy $sort LIMIT $page ,$pagesize";
         <!-- Loading Bootstrap -->
         <link href="../static/backend.css" rel="stylesheet">
     </head>
-
-    <body class="inside-header inside-aside ">
+       <body class="inside-header inside-aside ">
         <div id="main" role="main">
             <div class="tab-content tab-addtabs">
                 <div id="content">
@@ -94,9 +113,7 @@ $sql  = "SELECT * FROM `case` order by $orderBy $sort LIMIT $page ,$pagesize";
                                                     <div id="toolbar" class="toolbar">
                                                         <a href="javascript:location.reload();" class="btn btn-primary btn-refresh" >刷新</i></a> 
                                                         <a href="/testcase/case/buildcase.php" class="btn btn-danger btn-del " >新建用例</a> 
-                                                        <div class="pull-right search" >
-                                                        <button id="btnSearch" class="btn btn-default" type="button" name="Search" title="普通搜索"><i class="glyphicon glyphicon-search" ></i></button></div>
-                                                        <div class="columns-right pull-right"><input id="insearch" class="form-control" type="text" placeholder="搜索"></div>
+                                                       
                                                         
                                                     </div>
 
@@ -106,7 +123,7 @@ $sql  = "SELECT * FROM `case` order by $orderBy $sort LIMIT $page ,$pagesize";
                                                                 <th>
                                                                     ID
                                                                     <?php  
-                                                                    echo "<a href=$url?page=".$pageval."&orderBy=ID&sort=".$sort.">&#8595&#8593</a>";
+                                                                    echo "<a href=$url?page=".$pageval."&orderBy=ID&sort=".$sort."&search=".$search.">&#8595&#8593</a>";
                                                                     ?>
                                                                 </th>
                                                                 <th>
@@ -115,31 +132,31 @@ $sql  = "SELECT * FROM `case` order by $orderBy $sort LIMIT $page ,$pagesize";
                                                                 <th>
                                                                     相关需求
                                                                     <?php  
-                                                                    echo "<a href=$url?page=".$pageval."&orderBy=demand&sort=".$sort.">&#8595&#8593</a>";
+                                                                    echo "<a href=$url?page=".$pageval."&orderBy=demand&sort=".$sort."&search=".$search.">&#8595&#8593</a>";
                                                                     ?>
                                                                 </th>
                                                                 <th>
                                                                     测试结果
                                                                     <?php  
-                                                                    echo "<a href=$url?page=".$pageval."&orderBy=result&sort=".$sort.">&#8595&#8593</a>";
+                                                                    echo "<a href=$url?page=".$pageval."&orderBy=result&sort=".$sort."&search=".$search.">&#8595&#8593</a>";
                                                                     ?>
                                                                 </th>
                                                                 <th>
                                                                     创建人
                                                                     <?php  
-                                                                    echo "<a href=$url?page=".$pageval."&orderBy=builder&sort=".$sort.">&#8595&#8593</a>";
+                                                                    echo "<a href=$url?page=".$pageval."&orderBy=builder&sort=".$sort."&search=".$search.">&#8595&#8593</a>";
                                                                     ?>
                                                                 </th>
                                                                 <th>
                                                                     处理人
                                                                     <?php  
-                                                                    echo "<a href=$url?page=".$pageval."&orderBy=assignTo&sort=".$sort.">&#8595&#8593</a>";
+                                                                    echo "<a href=$url?page=".$pageval."&orderBy=assignTo&sort=".$sort."&search=".$search.">&#8595&#8593</a>";
                                                                     ?>
                                                                 </th>
                                                                 <th>
                                                                     更新时间
                                                                     <?php  
-                                                                    echo "<a href=$url?page=".$pageval."&orderBy=updatetime&sort=".$sort.">&#8595&#8593</a>";
+                                                                    echo "<a href=$url?page=".$pageval."&orderBy=updatetime&sort=".$sort."&search=".$search.">&#8595&#8593</a>";
                                                                     ?>
                                                                 </th>
                                                                 <th >
@@ -149,8 +166,10 @@ $sql  = "SELECT * FROM `case` order by $orderBy $sort LIMIT $page ,$pagesize";
                                                         </thead>
                                                         <tbody>
                                                             <?php 
+                                                            error_log($sql, 3, '/Applications/MAMP/logs/php_error.log');
+    														error_log($page, 3, '/Applications/MAMP/logs/php_error.log');
+                                                            $result = $conn->query($sql);
                                                             
-                                                                $result = $conn->query($sql);
                                                                 if ($result->num_rows > 0) {
                                                                     while($row = $result->fetch_assoc()){
                                                                         $color = "";
@@ -213,10 +232,10 @@ $sql  = "SELECT * FROM `case` order by $orderBy $sort LIMIT $page ,$pagesize";
                                                                             $next=$p;
                                                                         }
                                                                         $Previous =$pageval-1;
-                                                                        echo "共".$num."条&nbsp&nbsp每页".$pagesize."条&nbsp&nbsp"."&nbsp &nbsp".$pageval."/".$p."&nbsp &nbsp &nbsp"."<a href=$url"."?orderBy=".$orderBy."&sort=".$sort.">首页</a>
-                                                                    <a href=$url?page=".$next."&orderBy=".$orderBy."&sort=".$sort.">&nbsp&nbsp下一页</a>
-                                                                    <a href=$url?page=".$Previous."&orderBy=".$orderBy."&sort=".$sort.">&nbsp&nbsp上一页</a>
-                                                                    <a href=$url?page=".$p."&orderBy=".$orderBy."&sort=".$sort.">&nbsp&nbsp末页</a>";
+                                                                        echo "共".$num."条&nbsp&nbsp每页".$pagesize."条&nbsp&nbsp"."&nbsp &nbsp".$pageval."/".$p."&nbsp &nbsp &nbsp"."<a href=$url"."?orderBy=".$orderBy."&sort=".$sort."&search=".$search.">首页</a>
+                                                                    <a href=$url?page=".$next."&orderBy=".$orderBy."&sort=".$sort."&search=".$search.">&nbsp&nbsp下一页</a>
+                                                                    <a href=$url?page=".$Previous."&orderBy=".$orderBy."&sort=".$sort."&search=".$search.">&nbsp&nbsp上一页</a>
+                                                                    <a href=$url?page=".$p."&orderBy=".$orderBy."&sort=".$sort."&search=".$search.">&nbsp&nbsp末页</a>";
 
                                                                      }else{
                                                                          echo "共".$num."条&nbsp";
@@ -258,13 +277,6 @@ $sql  = "SELECT * FROM `case` order by $orderBy $sort LIMIT $page ,$pagesize";
 </div>
 <script type="text/javascript">
 
-$("#btnSearch").click(function(event){ 
-
-    var insearch = $("#insearch").val();
-    if (!insearch=="") {
-        window.location.href ="./searchdata.php?search="+insearch;
-    }
-});
 
   $('#exampleModal').on('show.bs.modal', function (event) {
 
@@ -360,5 +372,5 @@ $("#exampleModal").on("hidden.bs.modal", function(event) {
     $(this).removeData("modal");  
 }); 
 </script>
-</body>
+	</body>
 </html>

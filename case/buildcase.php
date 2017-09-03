@@ -1,7 +1,6 @@
 <?php
 include("../conn.php");
 session_start();
-
 if (isset($_SESSION["username"])) {
 	if (isset($_POST["submit"])) {
 		$casetitle=$conn->real_escape_string($_POST["title"]);
@@ -12,8 +11,9 @@ if (isset($_SESSION["username"])) {
 		$expects = $conn->real_escape_string($_POST["expects"]);
 		$remarks = $conn->real_escape_string($_POST["remarks"]);
 		$builder = $conn->real_escape_string($_SESSION["username"]);
-		$dt = new DateTime(); 
-		$dts = $dt->format('Y-m-d H:i');
+		$dt = new DateTime();
+		$dt->setTimezone(new DateTimeZone('PRC')); 
+		$dts = $dt->format('Y-m-d H:i:s');
 		$sql = "INSERT INTO `case` (`id`, `casetitle`, `precondition`, `demand`, `steps`, `expects`, `buildtime`, `updatetime`, `builder`, `updater`,`assignTo`, `result`, `remarks`) VALUES (NULL, '$casetitle', '$precondition', '$demand', '$steps', '$expects', '$dts', '$dts', '$builder', '$builder','$builder', '新建', '$remarks');";
 
 		if ($conn->multi_query($sql) === TRUE) {
