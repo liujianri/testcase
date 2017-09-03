@@ -215,9 +215,8 @@ $sql  = "SELECT * FROM `case` order by $orderBy $sort LIMIT $page ,$pagesize";
         </div>
         
 <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" >
-<div class="modal-dialog" role="document" style="margin: auto;width: 700px;max-width: 700px;">
+<div class="modal-dialog"   role="document" style="margin: auto;width: 700px;max-width: 700px;">
 <div id="di1" class="modal-content" style="width: 700px; max-width:700px">
-      <form >
         <div class="modal-body" >
         <div id="di" > 
         </div>
@@ -225,10 +224,9 @@ $sql  = "SELECT * FROM `case` order by $orderBy $sort LIMIT $page ,$pagesize";
         <div class="modal-footer">
             <div id="sel" style="width: 20%">  
             </div>
-            <button type="submit" id="reset1" class="btn btn-primary">保存</button>
+            <button type="submit" id="reset1" data-dismiss="modal" class="btn btn-primary">保存</button>
             <button type="button"  class="btn btn-default" data-dismiss="modal">关闭</button>
         </div>
-    </form>
 </div>
 </div>
 </div>
@@ -247,14 +245,14 @@ $sql  = "SELECT * FROM `case` order by $orderBy $sort LIMIT $page ,$pagesize";
 
         switch (datas.action) {
             case 'runCase':
-                ht = "<input type=\"hidden\" id=\"getid\" value="+datas.id+" ></input><label>步骤:</label><h6>"+datas.steps+"</h6><label>预期结果:</label><h6 >"+datas.expects+"</h6><label>备注:</label><h6 >"+datas.remarks+"</h6>"
+                ht = "<p id=\"getid\" >"+datas.id+"</p><label>步骤:</label><h6>"+datas.steps+"</h6><label>预期结果:</label><h6 >"+datas.expects+"</h6><label>备注:</label><h6 >"+datas.remarks+"</h6>"
                 htsel = "<select name=\"test_result\" id=\"test_result\"  class=\"form-control\"><option value=\"忽略\" data-keys=\"hulue hl\">忽略</option><option value=\"通过\" selected=\"selected\" data-keys=\"tongguo\">通过</option><option value=\"失败\" data-keys=\"shibai\">失败</option><option value=\"阻塞\" data-keys=\"zusai\">阻塞</option></select>"
                 break;
             case 'reviseCase':
-                ht = "<input type=\"hidden\" id=\"getid\" value="+datas.id+" ></input><label style=\"width: 65px\">标题:</label><input id=\"tit\" style=\"width: 100%\" value="+datas.casetitle+"></input><br><label style=\"width: 65px\">步骤:</label><textarea id=\"ste\" rows = \"5\" style=\"width: 100%\">"+datas.steps+"</textarea><br><label style=\"width: 65px\">预期结果:</label><textarea  id=\"ex\" rows = \"5\" style=\"width: 100%\" >"+datas.expects+"</textarea><label style=\"width: 65px\">备注:</label><textarea  id=\"rema\" rows = \"5\" style=\"width: 100%\" >"+datas.remarks+"</textarea>"
+                ht = "<p id=\"getid\" >"+datas.id+"</p><label style=\"width: 65px\">标题:</label><input id=\"tit\" style=\"width: 100%\" value="+datas.casetitle+"></input><br><label style=\"width: 65px\">步骤:</label><textarea id=\"ste\" rows = \"5\" style=\"width: 100%\">"+datas.steps+"</textarea><br><label style=\"width: 65px\">预期结果:</label><textarea  id=\"ex\" rows = \"5\" style=\"width: 100%\" >"+datas.expects+"</textarea><label style=\"width: 65px\">备注:</label><textarea  id=\"rema\" rows = \"5\" style=\"width: 100%\" >"+datas.remarks+"</textarea>"
                 break;
             case 'assignTo':
-                ht = "<input type=\"hidden\" id=\"getid\" value="+datas.id+" ></input><label style=\"width: 65px;font: 18px;\">重新指派</label><select id=\"assign\" style=\"width: 50%\" name=\"steps\" id=\"steps\" class=\"form-control\">";
+                ht = "<p id=\"getid\" >"+datas.id+"</p><label style=\"width: 65px;font: 18px;\">重新指派</label><select id=\"assign\" style=\"width: 50%\" name=\"steps\" id=\"steps\" class=\"form-control\">";
                 for(var i=0; i<getJsonLength(datas)-2; i++){
                     ht =ht+"<option value="+datas[i]+" data-keys="+datas[i]+">"+datas[i]+" </option>";
                 }
@@ -274,23 +272,21 @@ $sql  = "SELECT * FROM `case` order by $orderBy $sort LIMIT $page ,$pagesize";
 
 $('#reset1').click(function(event){
     var jsonD ="";
-    var getid = document.getElementById("getid").value;
     
     if ($('#test_result').length>0) {
-        var test_result = document.getElementById("test_result").value;
-        jsonD = {"id":getid,"test_result":test_result};
+        jsonD = {"id":$("#getid").text(),"test_result":$("#test_result").val()};
+        
     }
     if ($('#tit').length>0) {
-        var title = document.getElementById("tit").value;
-        var steps = document.getElementById("ste").value;
-        var expects = document.getElementById("ex").value;
-        var remarks = document.getElementById("rema").value;
-        var jsonD = {"title":title,"steps":steps,"id":getid,"expects":expects,"remarks":remarks};
+        var title = $("#tit").val();
+        var steps = $("#ste").val();
+        var expects = $("#ex").val();
+        var remarks = $("#rema").val();
+        jsonD = {"title":title,"steps":steps,"id":$("#getid").text(),"expects":expects,"remarks":remarks};
+        
     }
     if ($('#assign').length>0) {
-        var assignTo = document.getElementById("assign").value;
-        jsonD = {"id":getid,"assignTo":assignTo};
-        
+        jsonD = {"id":$("#getid").text(),"assignTo":$("#assign").val()};
     }
     
     $.ajax({
@@ -298,13 +294,17 @@ $('#reset1').click(function(event){
             url:"./getdata.php",
             data:jsonD,
             datatype: "json",
-            beforeSend:function(){},            
+            beforeSend:function(){
+            },            
             success:function(data){   
-
+                alert(data)
+                window.location.reload();
             },
             error: function(){
+                alert("111111")
             }         
          });
+
     return true;
 });
 

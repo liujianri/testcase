@@ -38,7 +38,7 @@ if (isset($_POST["test_result"])) {
     $sql  = "UPDATE `case` SET `result`='$test_result' WHERE `id`='$id';";
     $result = $conn->query($sql);
     $conn->close();
-    echo "ss";
+    echo "操作成功";
 }
 
 if (isset($_POST["steps"])) {
@@ -51,17 +51,17 @@ if (isset($_POST["steps"])) {
     error_log($sql, 3, '/Applications/MAMP/logs/php_error.log');
     $result = $conn->query($sql);
     $conn->close();
-    echo "ss";
+    echo "操作成功";
 }
 
 if (isset($_POST["assignTo"])) {
     $assignTo = $_POST["assignTo"];
     $id=$_POST["id"];
-    error_log($id, 3, '/Applications/MAMP/logs/php_error.log');
+    error_log($assignTo, 3, '/Applications/MAMP/logs/php_error.log');
     $sql  = "UPDATE `case` SET `assignTo`='$assignTo' WHERE `id`='$id';";
     $result = $conn->query($sql);
     $conn->close();
-    echo "ss";
+    echo "指派成功";
 }
 
 ?>
