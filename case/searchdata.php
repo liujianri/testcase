@@ -14,7 +14,7 @@ if (!isset($_SESSION["username"])) {
 if (isset($_GET["search"])&&!isset($_GET["orderBy"])) {
     $search = $conn->real_escape_string($_GET["search"]);
 
-    $sql = "SELECT * FROM `case` WHERE `steps` LIKE '%$search%' OR `demand` LIKE '%$search%' OR 'id' LIKE '%$search%' OR `builder` LIKE '%$search%' OR `updater` LIKE '%$search%' OR `assignTo` LIKE '%$search%' OR `casetitle` LIKE '%$search%' OR `expects` LIKE '%$search%'  OR `remarks` LIKE '%$search%' OR `result` LIKE '%$search%';";
+    $sql = "SELECT * FROM `case` WHERE `steps` LIKE '%$search%' OR `demand` LIKE '%$search%' OR 'id' LIKE '%$search%' OR `builder` LIKE '%$search%' OR `updater` LIKE '%$search%' OR `assignTo` LIKE '%$search%' OR `casetitle` LIKE '%$search%' OR `expects` LIKE '%$search%'  OR `remarks` LIKE '%$search%' OR `result` LIKE '%$search%'";
     
  	$result = $conn->query($sql);
     $num = $result->num_rows;
@@ -22,7 +22,6 @@ if (isset($_GET["search"])&&!isset($_GET["orderBy"])) {
     if (!is_int($p)) {
     	$p = ceil($num/$pagesize);
     }
-    error_log($num, 3, '/Applications/MAMP/logs/php_error.log');
 }
 
 
@@ -54,7 +53,7 @@ if(isset($_GET["orderBy"])){
         $sort="desc";
     }
 
-    $sql = "SELECT * FROM `case` WHERE `steps` LIKE '%$search%' OR `demand` LIKE '%$search%' OR 'id' LIKE '%$search%' OR `builder` LIKE '%$search%' OR `updater` LIKE '%$search%' OR `assignTo` LIKE '%$search%' OR `casetitle` LIKE '%$search%' OR `expects` LIKE '%$search%'  OR `remarks` LIKE '%$search%' OR `result` LIKE '%$search%';";
+    $sql = "SELECT * FROM `case` WHERE `steps` LIKE '%$search%' OR `demand` LIKE '%$search%' OR 'id' LIKE '%$search%' OR `builder` LIKE '%$search%' OR `updater` LIKE '%$search%' OR `assignTo` LIKE '%$search%' OR `casetitle` LIKE '%$search%' OR `expects` LIKE '%$search%'  OR `remarks` LIKE '%$search%' OR `result` LIKE '%$search%'";
 
     $result = $conn->query($sql);
     $num = $result->num_rows;
@@ -62,10 +61,12 @@ if(isset($_GET["orderBy"])){
     if (!is_int($p)) {
     	$p = ceil($num/$pagesize);
     }
-    error_log($num, 3, '/Applications/MAMP/logs/php_error.log');
+    error_log("大小".$pagesize."...", 3, '/Applications/MAMP/logs/php_error.log');
 
-    $sql = "SELECT * FROM `case` WHERE `steps` LIKE '%$search%' OR `demand` LIKE '%$search%' OR 'id' LIKE '%$search%' OR `builder` LIKE '%$search%' OR `updater` LIKE '%$search%' OR `assignTo` LIKE '%$search%' OR `casetitle` LIKE '%$search%' OR `expects` LIKE '%$search%'  OR `remarks` LIKE '%$search%' OR `result` LIKE '%$search%' order by $orderBy $sort LIMIT $page ,$pagesize ";
+    
 }
+
+$sql = $sql." order by ".$orderBy." " .$sort." LIMIT ".$page.",".$pagesize ;
  ?>
 
 
@@ -166,9 +167,7 @@ if(isset($_GET["orderBy"])){
                                                         </thead>
                                                         <tbody>
                                                             <?php 
-                                                            error_log($sql, 3, '/Applications/MAMP/logs/php_error.log');
-    														error_log($page, 3, '/Applications/MAMP/logs/php_error.log');
-                                                            $result = $conn->query($sql);
+                                                                $result = $conn->query($sql);
                                                             
                                                                 if ($result->num_rows > 0) {
                                                                     while($row = $result->fetch_assoc()){
