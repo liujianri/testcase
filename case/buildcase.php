@@ -1,6 +1,6 @@
 <?php
-include("../conn.php");
 session_start();
+include("../conn.php");
 if (isset($_SESSION["username"])) {
 	if (isset($_POST["submit"])) {
 		$casetitle=$conn->real_escape_string($_POST["title"]);
@@ -67,22 +67,22 @@ if (isset($_SESSION["username"])) {
 			return true;
 		}
 </script>
-
     </head>
-
     <body class="inside-header inside-aside ">
         <div id="main" role="main">
             <div class="tab-content tab-addtabs">
                 <div id="content">
                     <div class="row">
                         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                            <section class="content-header hide">
-                                <h1>
-                                                                     <small>Control panel</small>
-                                </h1>
-                            </section>
+                            
                             <!-- RIBBON -->
                             <div id="ribbon">
+                                <ol class="breadcrumb pull-left">
+                                    <li><a href="caseList.php" class="addtabsit">用例列表</a></li>
+                                    
+                                    <li><?php  echo "<a href=\"./aboutme.php?search=".$_SESSION["username"]."\">指派给我的</a>"?></li>
+                                    <li><a href="statistics.php" class="addtabsit">统计</a></li>
+                                </ol>
                                 <ol class="breadcrumb pull-right">
                                     <li><a  ><?php if(isset($_SESSION["username"])){echo $_SESSION["username"];} ?></a></li>
                                     <li><a  href="/testcase/login/logout.php?action=logout">退出</a></li>

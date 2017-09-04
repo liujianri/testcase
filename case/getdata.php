@@ -9,7 +9,7 @@ $dt = new DateTime();
 $dt->setTimezone(new DateTimeZone('PRC'));
 $dts = $dt->format('Y-m-d H:i:s');
 if(isset($_GET["ID"])&&$_GET["ID"]){
-    $pageval=$_GET["ID"];
+    $pageval=$conn->real_escape_string($_GET["ID"]);
     $action = $_GET["action"];
     if ($action=="assignTo") {
     	$i = 0;
@@ -34,8 +34,8 @@ if(isset($_GET["ID"])&&$_GET["ID"]){
 }
 
 if (isset($_POST["test_result"])) {
-    $test_result = $_POST["test_result"];
-    $id=$_POST["id"];
+    $test_result = $conn->real_escape_string($_POST["test_result"]);
+    $id=$conn->real_escape_string($_POST["id"]);
     error_log($test_result, 3, '/Applications/MAMP/logs/php_error.log');
     $sql  = "UPDATE `case` SET `result`='$test_result',updatetime='$dts' WHERE `id`='$id';";
     $result = $conn->query($sql);
@@ -58,8 +58,8 @@ if (isset($_POST["steps"])) {
 }
 
 if (isset($_POST["assignTo"])) {
-    $assignTo = $_POST["assignTo"];
-    $id=$_POST["id"];
+    $assignTo = $conn->real_escape_string($_POST["assignTo"]);
+    $id=$conn->real_escape_string($_POST["id"]);
     error_log($assignTo, 3, '/Applications/MAMP/logs/php_error.log');
     $sql  = "UPDATE `case` SET `assignTo`='$assignTo',updatetime='$dts' WHERE `id`='$id';";
     $result = $conn->query($sql);

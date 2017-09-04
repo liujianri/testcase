@@ -11,10 +11,11 @@ $pageval=0;
 if (!isset($_SESSION["username"])) {
     echo "<script>alert('未登陆');window.location.href='/testcase/login/login.php'</script>";
 }
+
 if (isset($_GET["search"])&&!isset($_GET["orderBy"])) {
     $search = $conn->real_escape_string($_GET["search"]);
 
-    $sql = "SELECT * FROM `case` WHERE `steps` LIKE '%$search%' OR `demand` LIKE '%$search%' OR 'id' LIKE '%$search%' OR `builder` LIKE '%$search%' OR `updater` LIKE '%$search%' OR `assignTo` LIKE '%$search%' OR `casetitle` LIKE '%$search%' OR `expects` LIKE '%$search%'  OR `remarks` LIKE '%$search%' OR `result` LIKE '%$search%'";
+    $sql = "SELECT * FROM `case` WHERE `assignTo`='$search' ";
     
  	$result = $conn->query($sql);
     $num = $result->num_rows;
@@ -53,7 +54,7 @@ if(isset($_GET["orderBy"])){
         $sort="desc";
     }
 
-    $sql = "SELECT * FROM `case` WHERE `steps` LIKE '%$search%' OR `demand` LIKE '%$search%' OR 'id' LIKE '%$search%' OR `builder` LIKE '%$search%' OR `updater` LIKE '%$search%' OR `assignTo` LIKE '%$search%' OR `casetitle` LIKE '%$search%' OR `expects` LIKE '%$search%'  OR `remarks` LIKE '%$search%' OR `result` LIKE '%$search%'";
+    $sql = "SELECT * FROM `case` WHERE `assignTo`='$search' ";
 
     $result = $conn->query($sql);
     $num = $result->num_rows;
@@ -67,11 +68,10 @@ if(isset($_GET["orderBy"])){
 }
 
 $sql = "$sql order by $orderBy $sort LIMIT $page,$pagesize";
-
  ?>
 
 
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="zh-cn">
     <head>
         <meta charset="utf-8">
@@ -97,8 +97,8 @@ $sql = "$sql order by $orderBy $sort LIMIT $page,$pagesize";
                             <div id="ribbon">
                                 <ol class="breadcrumb pull-left">
                                     <li><a href="/testcase/case/caseList.php" class="addtabsit">用例列表</a></li>
-                                    <li><?php  echo "<a href=\"./aboutme.php?search=".$_SESSION["username"]."\">指派给我的</a>"?></li>
                                     <li><a href="statistics.php" class="addtabsit">统计</a></li>
+                              
                                 </ol>
                                 <ol class="breadcrumb pull-right">
                                     <li><a  ><?php if(isset($_SESSION["username"])){echo $_SESSION["username"];} ?></a></li>
