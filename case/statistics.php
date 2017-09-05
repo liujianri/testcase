@@ -3,10 +3,7 @@ session_start();
 if (!isset($_SESSION["username"])) {
     echo "<script>alert('未登陆');window.location.href='/testcase/login/login.php'</script>";
 }
-include("../conn.php");
 
-$sql = "SELECT `demand` FROM `case`";
-$result = $conn->query($sql);
 
  ?>
 
@@ -25,6 +22,7 @@ $result = $conn->query($sql);
         <link rel="shortcut icon" href="assets/img/favicon.ico" />
         <!-- Loading Bootstrap -->
         <link href="../static/backend.css" rel="stylesheet">
+        <script src="../static/echarts.common.min.js"></script>
     </head>
     <body class="inside-header inside-aside ">
         <div id="main" role="main">
@@ -35,8 +33,9 @@ $result = $conn->query($sql);
                             
                             <div id="ribbon">
                                 <ol class="breadcrumb pull-left">
-                                    <li><a href="/testcase/case/caseList.php" class="addtabsit">用例列表</a></li>
+                                    <li><a href="/testcase/case/buildcase.php" class="addtabsit" >新建用例</a></li>
                                     <li><?php  echo "<a href=\"./aboutme.php?search=".$_SESSION["username"]."\">指派给我的</a>"?></li>
+                                    <li><a href="/testcase/case/caseList.php" class="addtabsit">用例列表</a></li>
                                 </ol>
                                 <ol class="breadcrumb pull-right">
                                     <li><a  ><?php if(isset($_SESSION["username"])){echo $_SESSION["username"];} ?></a></li>
@@ -51,34 +50,104 @@ $result = $conn->query($sql);
                                             <div class="tab-pane fade active in" id="one">
                                                 <div class="widget-body no-padding">
                                                     <div id="toolbar" class="toolbar">
-                                                        <a href="javascript:location.reload();" class="btn btn-primary btn-refresh" >刷新</i></a> 
-                                                        <a href="/testcase/case/buildcase.php" class="btn btn-danger btn-del " >新建用例</a>
-                                                    </div>
-                                                    <div>
-                                                    	<?php 
-                                                    	while ( $row = $result->fetch_assoc()) {	
-                                                    		$de = $conn->real_escape_string($row['demand']);
-                                    						$sql = "select `result`,count(`result`) from `case` WHERE `demand`='$de' group by `result`";
-                                                    		$results = $conn->query($sql);
-                                                    		echo "<p style=\"color: red\">".$row['demand']."<p>";
-                                                    		while ( $rows = $results->fetch_assoc()) {
-                                                    			echo $rows['result']."  ".$rows["count(`result`)"];
-                                                    		}
-                                                    	}
+                                                        <div>
+                                                        	<div class="pull-right ">
+                                                        	<form>
+                                                        		<label class="control-label">用例创建时间:</label>
+                                                        		<span class="relative_time_tip" rel="#during_tip"></span>
+                                                        		&nbsp;&nbsp;<div id="between_time" style="display: inline;">从&nbsp&nbsp<input type="date"  name="begintime"><span style="margin-left:10px;margin-right:10px;">到</span><input type="date" name="stoptime" >&nbsp&nbsp</div>
 
-                                                    	 ?>
+                                                        		<button class="btn btn-danger  " >生成报表</button>
+                                                        	</form>
+                                                        </div>
+                                                        </div>
+                                                        <div  >
+                                                        </div>
                                                     </div>
-
                                                 </div>
                                             </div>
                                         </div>
+                                        
                                     </div>
+                                    	<div id="myTabContent" class="tab-content">
+                                        	<div id="op" style="width: 1000px;height:500px;"></div>
+                                        </div>
+                                	</div>
                                 </div>
-                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+<script type="text/javascript">
+        	
+var myChart = echarts.init(document.getElementById('op'));
+        	
+var option = {
+	title: {
+        text: '需求用例测试结果分布'
+    },
+    tooltip : {
+    	trigger: 'axis',
+    	axisPointer : {            // 坐标轴指示器，坐标轴触发有效
+            type : 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
+        }
+    },
+    legend: {
+    	data:['失败','阻塞','通过','忽略','新建']
+    },
+    grid: {
+    	left: '3%',
+    	right: '4%',
+    	bottom: '3%',
+    	containLabel: true
+    },
+    xAxis : [
+    {
+    	type : 'value'
+    }
+    ],
+    yAxis : [
+    {
+    	type : 'category',
+    	data : ['需求2','55','热我忽然','周额外热啊哈','周热污染喝哇和我和我','热我很近付个首付啥卡大话水浒是','发']
+    	
+    }
+    ],
+    series : [
+    {
+    	name:'失败',
+    	type:'bar',
+    	stack: '失败',
+    	data:[620, 732, 701, 734, 1090,0, 1120]
+    },
+    {
+    	name:'阻塞',
+    	type:'bar',
+    	stack: '阻塞',
+    	data:[120, 132, 101, 134, 290, 230, 220]
+    },
+    {
+    	name:'通过',
+    	type:'bar',
+    	stack: '通过',
+    	data:[60, 72, 71, 74, 190, 130, 110]
+    },
+    {
+    	name:'忽略',
+    	type:'bar',
+    	stack: '忽略',
+    	data:[62, 82, 91, 84, 109, 110, 120]
+    },
+    {
+    	name:'新建',
+    	type:'bar',
+    	stack: '新建',
+    	data:[62, 82, 91, 84, 109, 110, 120]
+    }
+    ]
+};
+myChart.setOption(option);
+</script>
 	</body>
 </html>

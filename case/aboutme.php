@@ -64,7 +64,6 @@ if(isset($_GET["orderBy"])){
     }
     error_log("大小".$pagesize."...", 3, '/Applications/MAMP/logs/php_error.log');
 
-    
 }
 
 $sql = "$sql order by $orderBy $sort LIMIT $page,$pagesize";
