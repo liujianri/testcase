@@ -52,28 +52,25 @@ if (!isset($_SESSION["username"])) {
                                                     <div id="toolbar" class="toolbar">
                                                         <div>
                                                         	<div class="pull-right ">
-                                                        	<form>
                                                         		<label class="control-label">用例创建时间:</label>
                                                         		<span class="relative_time_tip" rel="#during_tip"></span>
-                                                        		&nbsp;&nbsp;<div id="between_time" style="display: inline;">从&nbsp&nbsp<input type="date"  name="begintime"><span style="margin-left:10px;margin-right:10px;">到</span><input type="date" name="stoptime" >&nbsp&nbsp</div>
-
-                                                        		<button class="btn btn-danger  " >生成报表</button>
-                                                        	</form>
+                                                        		&nbsp;&nbsp;<div id="between_time" style="display: inline;">从&nbsp&nbsp<input type="date"  id="begintime"><span style="margin-left:10px;margin-right:10px;">到</span><input type="date" id="stoptime" >&nbsp&nbsp</div>
+                                                        		<button id="btncret" class="btn btn-danger  " >生成报表</button>
+                                                        	</div>
                                                         </div>
-                                                        </div>
-                                                        <div  >
+                                                        <div >
                                                         </div>
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
-                                        
-                                    </div>
-                                    	<div id="myTabContent" class="tab-content">
-                                        	<div id="op" style="width: 1000px;height:500px;"></div>
-                                        </div>
                                 	</div>
+                                	<div  class="tab-content">
+                                        	<div id="op" style="width: 800px;height:500px;">
+                                        	</div>
+                                    </div>
                                 </div>
+                            </div>    
                         </div>
                     </div>
                 </div>
@@ -81,9 +78,17 @@ if (!isset($_SESSION["username"])) {
         </div>
 <script type="text/javascript">
         	
-var myChart = echarts.init(document.getElementById('op'));
-        	
-var option = {
+
+$("#btncret").click(function(event){
+
+	if ($("#begintime").val()=="" || $("#stoptime").val()=="") {
+		alert("请设置时间段");
+		return false;
+	}
+	var url = "./getdata.php?begintime="+$("#begintime").val()+"&stoptime="+$("#stoptime").val()
+	$.getJSON(url,function(datas,status){
+	var myChart = echarts.init(document.getElementById('op'));
+	var option = {
 	title: {
         text: '需求用例测试结果分布'
     },
@@ -103,14 +108,15 @@ var option = {
     	containLabel: true
     },
     xAxis : [
-    {
+    {	
+
     	type : 'value'
     }
     ],
     yAxis : [
     {
     	type : 'category',
-    	data : ['需求2','55','热我忽然','周额外热啊哈','周热污染喝哇和我和我','热我很近付个首付啥卡大话水浒是','发']
+    	data : datas.demand
     	
     }
     ],
@@ -119,35 +125,40 @@ var option = {
     	name:'失败',
     	type:'bar',
     	stack: '失败',
-    	data:[620, 732, 701, 734, 1090,0, 1120]
+    	data:datas.fail
     },
     {
     	name:'阻塞',
     	type:'bar',
-    	stack: '阻塞',
-    	data:[120, 132, 101, 134, 290, 230, 220]
+    	stack: '失败',
+    	data:datas.na
     },
     {
     	name:'通过',
     	type:'bar',
-    	stack: '通过',
-    	data:[60, 72, 71, 74, 190, 130, 110]
+    	stack: '失败',
+    	data:datas.pass
     },
     {
     	name:'忽略',
     	type:'bar',
     	stack: '忽略',
-    	data:[62, 82, 91, 84, 109, 110, 120]
+    	data:datas.nt
     },
     {
     	name:'新建',
     	type:'bar',
-    	stack: '新建',
-    	data:[62, 82, 91, 84, 109, 110, 120]
+    	stack: '失败',
+    	data:datas.new
     }
     ]
-};
-myChart.setOption(option);
+	};
+	myChart.setOption(option);
+
+	});
+	return false;
+});
+
 </script>
 	</body>
 </html>

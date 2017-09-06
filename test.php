@@ -22,11 +22,7 @@ function cont($conn,$sq,$str){
 	$rows = $results->num_rows;
 	return $rows; 
 }
-print_r($demand);
-print_r($fail);
-print_r($pass);
-print_r($new);
-print_r($nt);
-print_r($na);
+$all = array('demand' => $demand, "fail"=>$fail,'pass' => $pass,'new' => $new,'nt' => $nt,'na' => $na,);
+echo json_encode($all);
 
 ?>
