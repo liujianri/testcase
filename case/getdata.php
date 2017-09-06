@@ -84,6 +84,7 @@ if (isset($_GET["begintime"])&&isset($_GET["stoptime"])) {
         $na[] = cont($conn,$sql,"'阻塞'") ;
     }
     $all = array('demand' => $demand, "fail"=>$fail,'pass' => $pass,'new' => $new,'nt' => $nt,'na' => $na,);
+     $conn->close();
     echo json_encode($all);   
 }
 function cont($conn,$sq,$str){
@@ -91,7 +92,7 @@ function cont($conn,$sq,$str){
         $results = $conn->query($sql);
         $rows = $results->num_rows;
         return $rows; 
-    }
+}
 
 
 
